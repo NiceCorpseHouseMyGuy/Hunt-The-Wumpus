@@ -1,3 +1,4 @@
 class Wumpus:
     def __init__(self):
-        pass
+        self.alive = True
+        self.position = None
