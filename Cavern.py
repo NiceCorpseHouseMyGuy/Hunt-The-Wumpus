@@ -1,3 +1,3 @@
-class Player:
+class Cavern:
     def __init__(self):
         pass
