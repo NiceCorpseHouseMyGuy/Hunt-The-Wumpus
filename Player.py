@@ -5,5 +5,6 @@ class Player:
         self.position = None
 
     def shoot_arrow(self):
-        self.arrows = self.arrows - 1
+        if self.arrows != 0:
+            self.arrows = self.arrows - 1
         print(self.arrows)
