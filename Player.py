@@ -7,4 +7,3 @@ class Player:
     def shoot_arrow(self):
         if self.arrows != 0:
             self.arrows = self.arrows - 1
-        print(self.arrows)
