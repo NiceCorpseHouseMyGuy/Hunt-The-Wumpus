@@ -132,6 +132,7 @@ class Game:
             if self.Player.position in self.map.rooms[cavern.position]:
                 print("You feel a breeze.")
                 print()
+                break
 
     ## If you chose to move, you must select the path ##
     def select_path(self):
