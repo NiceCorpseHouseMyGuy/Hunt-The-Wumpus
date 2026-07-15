@@ -25,8 +25,12 @@ class Game:
     def __init__(self):
         self.Player = Player()
         self.Wumpus = Wumpus()
-        self.Ravens = Ravens()
-        self.Cavern = Cavern()
+        self.Ravens1 = Ravens()
+        self.Ravens2 = Ravens()
+        self.RavensList = [self.Ravens1, self.Ravens2]
+        self.Cavern1 = Cavern()
+        self.Cavern2 = Cavern()
+        self.CavernList = [self.Cavern1, self.Cavern2]
         self.memory = None
         self.map = Map()
 
@@ -44,13 +48,15 @@ class Game:
         self.map.occupied.extend(self.map.rooms[self.Player.position])
         self.map.set_player_unoccupied()
 
-        self.Ravens.position = random.choice(self.map.unoccupied) # This is here to set the position to a room unoccupied.
-        self.map.occupied.append(self.Ravens.position)
-        self.map.set_unoccupied()
+        for raven in self.RavensList:
+            raven.position = random.choice(self.map.unoccupied) # This is here to set the position to a room unoccupied.
+            self.map.occupied.append(raven.position)
+            self.map.set_unoccupied()
 
-        self.Cavern.position = random.choice(self.map.unoccupied)
-        self.map.occupied.append(self.Cavern.position)
-        self.map.set_unoccupied()
+        for cavern in self.CavernList:
+            cavern.position = random.choice(self.map.unoccupied)
+            self.map.occupied.append(cavern.position)
+            self.map.set_unoccupied()
 
         self.Wumpus.position = random.choice(self.map.player_occupied)
 
@@ -117,12 +123,15 @@ class Game:
         if self.Player.position in self.map.rooms[self.Wumpus.position]:
             print("You hear breathing.")
             print()
-        if self.Player.position in self.map.rooms[self.Ravens.position]:
-            print("You hear flapping.")
-            print()
-        if self.Player.position in self.map.rooms[self.Cavern.position]:
-            print("You feel a breeze.")
-            print()
+        for raven in self.RavensList:
+            if self.Player.position in self.map.rooms[raven.position]:
+                print("You hear flapping.")
+                print()
+                break
+        for cavern in self.CavernList:
+            if self.Player.position in self.map.rooms[cavern.position]:
+                print("You feel a breeze.")
+                print()
 
     ## If you chose to move, you must select the path ##
     def select_path(self):
@@ -136,7 +145,14 @@ class Game:
             if selected_path in self.map.rooms[self.Player.position]:
                 self.Player.position = selected_path
                 self.map.set_unoccupied()
-                self.check_dangers() # This is here to check what is in the room you wanna go to before you can safely be there.
+                # These are here to check what is in the room you wanna go to before you can safely be there.
+                self.check_wumpus()
+                self.check_ravens()
+                self.check_caverns() 
+                if self.Player.alive == True:
+                    # If nothing is here, then you will be safe.
+                    print("===============================================")
+                    self.prompt()
             else: 
                 print("This is not an available room.")
                 print("===============================================")
@@ -148,7 +164,7 @@ class Game:
             self.prompt()
 
     ## This checks what is in the room you want to go to ##
-    def check_dangers(self):
+    def check_wumpus(self):
         if self.Player.alive == True:
             if self.Player.position == self.Wumpus.position: # If the Wumpus is here.
                 pygame.mixer.Sound.play(sfx_gameover)
@@ -160,16 +176,22 @@ class Game:
                 time.sleep(3)
                 self.try_again()
 
-            elif self.Player.position == self.Ravens.position: # If the Ravens are here.
+    def check_ravens(self):
+        for raven in self.RavensList:
+            if self.Player.position == raven.position: # If the Ravens are here.
+                self.Player.alive = False
                 time.sleep(0.5)
                 print("===============================================")
                 print("       You've been displaced by Ravens!        ")
                 print("===============================================")
                 self.Player.position = random.choice(self.map.unoccupied)
                 time.sleep(3)
+                self.Player.alive = True
                 self.prompt()
-            
-            elif self.Player.position == self.Cavern.position: # If the Cavern is here.
+
+    def check_caverns(self):
+        for cavern in self.CavernList:
+            if self.Player.position == cavern.position: # If the Cavern is here.
                 pygame.mixer.Sound.play(sfx_gameover)
                 self.Player.alive = False
                 time.sleep(0.5)
@@ -178,10 +200,6 @@ class Game:
                 print("===============================================")
                 time.sleep(3)
                 self.try_again()
-
-            else: # If nothing is here, then you will be safe.
-                print("===============================================")
-                self.prompt()
 
     ## This shoots arrows as well as tells you when you win the game ##
     def shoot_arrow(self):
@@ -247,10 +265,15 @@ class Game:
         if answer in ["R", "r"]:
             print("===============================================")
             self.opening()
-        if answer in ["Q", "q"]:
+        elif answer in ["Q", "q"]:
             print()
             print("Narrator: Leaving so soon? Okay.")
             time.sleep(2)
+        else:
+            print()
+            print("This is not an option.")
+            time.sleep(2)
+            self.try_again()
 
     ## This is the first part of the reintroduction of the narrator and yourself from 10 Puzzles ##
     def introduction(self):
