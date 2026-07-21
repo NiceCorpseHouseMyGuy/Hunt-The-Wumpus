@@ -270,6 +270,7 @@ class Game:
             print()
             print("Narrator: Leaving so soon? Okay.")
             time.sleep(2)
+            exit()
         else:
             print()
             print("This is not an option.")
