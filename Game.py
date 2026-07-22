@@ -58,7 +58,7 @@ class Game:
             self.map.occupied.append(cavern.position)
             self.map.set_unoccupied()
 
-        self.Wumpus.position = random.choice(self.map.player_occupied)
+        self.Wumpus.position = random.choice(self.map.player_unoccupied)
 
     ## This is just the title ##
     def begin_game(self):
